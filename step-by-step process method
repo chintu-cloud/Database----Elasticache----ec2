@@ -41,72 +41,7 @@ VALUES ('12345', 'John', 'Doe', 'john.doe@example.com');
 # and change elastic cache details in redis config section  according to your end--------
 # this is code 
 
-import pymysql
-import redis
-import json
-import sys
-
-# Redis config
-redis_client = redis.Redis(
-    host='dev-11d0s9.serverless.use1.cache.amazonaws.com',             
-    port=6379,
-    ssl=True,  # Set to True for ElastiCache with TLS
-    decode_responses=True,
-    socket_timeout=5
-)
-
-# RDS config
-RDS_HOST = 'database-2.c6ricqgseec0.us-east-1.rds.amazonaws.com'         
-RDS_USER = 'admin'
-RDS_PASSWORD = 'chandan#1234'
-RDS_DB_NAME = 'test'
-TABLE_NAME = 'users'
-
-def fetch_data_from_rds():
-    try:
-        connection = pymysql.connect(
-            host=RDS_HOST,
-            user=RDS_USER,
-            password=RDS_PASSWORD,
-            database=RDS_DB_NAME
-        )
-        print("🔗 Connected to RDS")
-
-        with connection.cursor() as cursor:
-            cursor.execute(f"SELECT * FROM {TABLE_NAME} LIMIT 10;")
-            rows = cursor.fetchall()
-            return rows
-
-    except Exception as e:
-        print("❌ RDS Error:", e)
-        return None
-
-    finally:
-        if 'connection' in locals():
-            connection.close()
-
-def main():
-    cache_key = 'cached_table_data'
-    bypass_cache = "--refresh" in sys.argv
-
-    if not bypass_cache:
-        cached_data = redis_client.get(cache_key)
-        if cached_data:
-            print("✅ Fetched from Redis cache:")
-            print(json.loads(cached_data))
-            return
-
-    print("⚙️ No cache found or refresh requested. Fetching from RDS...")
-    data = fetch_data_from_rds()
-    if data:
-        redis_client.set(cache_key, json.dumps(data), ex=90)
-        print("📦 Cached in Redis:")
-        print(data)
-    else:
-        print("⚠️ No data fetched from RDS.")
-
-if __name__ == "__main__":
-    main()
+    vi cache.py  file inside code there 
 
 
 --------------------------------------------------------------after that run the file by using pythin3 cache.py -----------------------------
@@ -173,12 +108,10 @@ get http://publicip/tablename
 
 post
 
- {
-  "title": "MLOPS",
-  "desc": "MLOPS",
-  "price": 5200,
-  "cover": "https://docs.multy.dev/assets/images/multi-cloud-314609adeec670988dff0882a93fdcb0.png"
-}
+inside postman >> inside raw
+  we can add data in raw option 
+
+ ****  data are store inside postman file
 
    
-// in this above all enter in raw option then send
+//  all data are enter in raw option then send
