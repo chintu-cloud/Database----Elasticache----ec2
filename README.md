@@ -114,4 +114,5 @@ inside postman >> inside raw
  ****  data are store inside postman file
 
    
-//  all data are enter in raw option then send
+//  all data are enter in raw option then 
+      then send
