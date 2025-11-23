@@ -1,3 +1,8 @@
+<img width="1207" height="256" alt="DMS" src="https://github.com/user-attachments/assets/7e06d32c-c843-44fd-b6c4-96c5aa299ce3" />
+
+
+
+
 -------------------------step1----------------------
 create the ec2 with amzon Linux os server
 then connect to the server
