@@ -2,6 +2,274 @@
 
 
 
+# 📘 EC2 – RDS – ElastiCache (Redis) – Node.js Backend Setup
+
+This project demonstrates how to:
+
+* Create an **EC2 instance**
+* Connect it with **Amazon RDS (MySQL)**
+* Use **Amazon ElastiCache (Redis)** for caching
+* Run a **Python cache layer**
+* Deploy a **Node.js backend** connected to RDS
+* Test APIs using **curl** and **Postman**
+
+---
+
+## 🧱 Architecture Overview
+
+* **EC2 (Amazon Linux)** – Application server
+* **RDS (MySQL / MariaDB)** – Persistent database
+* **ElastiCache (Redis OSS)** – In-memory cache (TTL: 90 seconds)
+* **Node.js Backend** – REST API
+* **Python Script (`cache.py`)** – RDS + Redis cache demo
+
+---
+
+## 🚀 Step 1: Create EC2 Instance
+
+1. Launch an **EC2 instance**
+
+   * OS: **Amazon Linux**
+2. Connect to the EC2 server using SSH
+
+---
+
+## 🗄️ Step 2: Create RDS Database
+
+1. Create an **Amazon RDS (MySQL/MariaDB)** instance
+2. Note down:
+
+   * **RDS Endpoint**
+   * **Username**
+   * **Password**
+   * **Port (3306)**
+
+---
+
+## ⚡ Step 3: Create ElastiCache (Redis)
+
+1. Open **Amazon ElastiCache**
+2. Click **Create cache**
+3. Choose **Redis OSS**
+4. Give a cache name and create it
+5. Open the cache cluster
+6. Copy the **Cache Endpoint**
+   👉 *Remove the port number*
+
+---
+
+## 📦 Step 4: Install Dependencies on EC2
+
+```bash
+sudo yum install mariadb105-server -y
+sudo yum install python3-pip -y
+pip install pymysql redis
+```
+
+---
+
+## 🔌 Step 5: Connect to RDS from EC2
+
+```bash
+mysql -h <rds-endpoint> -u admin -p<rds-password>
+```
+
+---
+
+## 🧪 Step 6: Create Database and Table
+
+```sql
+CREATE DATABASE test;
+USE test;
+
+CREATE TABLE users (
+    user_id VARCHAR(50) PRIMARY KEY,
+    first_name VARCHAR(100),
+    last_name VARCHAR(100),
+    email VARCHAR(100)
+);
+```
+
+### Insert Sample Data
+
+```sql
+INSERT INTO users (user_id, first_name, last_name, email)
+VALUES ('12345', 'John', 'Doe', 'john.doe@example.com');
+```
+
+---
+
+## 🐍 Step 7: Create `cache.py`
+
+1. Create the file:
+
+```bash
+vi cache.py
+```
+
+2. Paste the provided Python code
+3. Update:
+
+   * **RDS credentials** in RDS config section
+   * **Redis endpoint** in Redis config section
+
+---
+
+## ▶️ Step 8: Run Cache Script
+
+```bash
+python3 cache.py
+```
+
+### Expected Behavior
+
+* **First run** → Data fetched from **RDS**
+* **Second run** → Data fetched from **Redis cache**
+* Cache TTL = **90 seconds**
+* New RDS records will appear **after cache expiry**
+
+---
+
+## 🌐 Step 9: Node.js Backend Setup
+
+### Install Required Packages
+
+```bash
+sudo su -
+yum install mariadb105-server -y
+sudo dnf install -y nodejs
+yum install git -y
+```
+
+### Clone Repository
+
+```bash
+git clone https://github.com/CloudTechDevOps/2nd10WeeksofCloudOps-main.git
+cd 2nd10WeeksofCloudOps-main/
+```
+
+Remove unnecessary files if required.
+
+---
+
+## 📂 Backend Configuration
+
+```bash
+cd backend/
+vi .env
+```
+
+Update `.env`:
+
+```env
+DB_HOST=<rds-endpoint>
+DB_USERNAME=admin
+DB_PASSWORD="chandan31234"
+PORT=3306
+```
+
+---
+
+## 📥 Install & Start Application
+
+```bash
+npm install
+npm start
+```
+
+---
+
+## 🗃️ Create Tables Using SQL File
+
+```bash
+mysql -h <rds-endpoint> -u admin -p<password> < test.sql
+```
+
+---
+
+## 🔄 Run App with PM2
+
+```bash
+npm install -g pm2
+pm2 start index.js --name node-app
+```
+
+---
+
+## 🧪 API Testing Using Curl
+
+### POST Request
+
+```bash
+curl -X POST http://localhost/books \
+  -H "Content-Type: application/json" \
+  -d '{
+        "title": "chandan",
+        "desc": "this is my backend to rds connection",
+        "price": 24543.2,
+        "cover": "https://docs.multy.dev/assets/images/multi-cloud-314609adeec670988dff0882a93fdcb0.png"
+      }'
+```
+
+✔️ Data will be stored in **RDS**
+
+---
+
+## 📮 API Testing Using Postman
+
+### GET Request
+
+```http
+GET http://<public-ip>/books
+```
+
+### Sample GET Output
+
+```json
+[
+  {
+    "id": 1,
+    "title": "chandan",
+    "desc": "this is my backend to rds connection",
+    "price": 24543.2,
+    "cover": "https://docs.multy.dev/assets/images/multi-cloud-314609adeec670988dff0882a93fdcb0.png"
+  }
+]
+```
+
+---
+
+### POST Request in Postman
+
+* Method: **POST**
+* Body → **raw → JSON**
+
+```json
+{
+  "title": "CloudOps",
+  "desc": "Data added from Postman",
+  "price": 1200,
+  "cover": "https://example.com/image.png"
+}
+```
+
+Click **Send** ✅
+Data will be saved in RDS.
+
+---
+
+## ✅ Final Result
+
+* EC2 successfully connected to RDS
+* Redis cache working with TTL (90 seconds)
+* Python cache layer tested
+* Node.js backend running with PM2
+* API tested using **curl** and **Postman**
+
+---
+
+
+```
 
 -------------------------step1----------------------
 create the ec2 with amzon Linux os server
@@ -121,3 +389,4 @@ inside postman >> inside raw
    
 //  all data are enter in raw option then 
       then send
+```
